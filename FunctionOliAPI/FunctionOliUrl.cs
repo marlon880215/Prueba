@@ -8,7 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using FunctionOliAPI.Entities;
-
+using System.Collections.Generic;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace FunctionOliAPI
 {
@@ -33,6 +34,7 @@ namespace FunctionOliAPI
                 return Funciones.DevolverError("register reservation ", "428",
                                                 "You must configure the database connection!");
             }*/
+            DataBack dataBack = new DataBack();
 
             if (data != null)
             {
@@ -44,45 +46,51 @@ namespace FunctionOliAPI
                     StartDate = (DateTime)data?.StartDate,
                     EndDate = (DateTime)data?.EndDate
                 };
-            }
 
-            /* using (SqlConnection conn = new SqlConnection(str))
-            {
-                conn.Open();
-                var insert = "INSERT INTO dbo.tbl_reserv(" +
-                                "NameCustomer, " +
-                                "EmailCustomer, " +
-                                "IdBusiness, " +
-                                "StartDate, " +
-                                "EndDate, " +
-                                "VALUES ('" +
-                                dataSent.NameCustomer + "', " +
-                                dataSent.EmailCustomer + ", '" +
-                                dataSent.IdBusiness + "', '" +
-                                dataSent.StartDate + "', '" +
-                                dataSent.EndDate + "'); ";
 
-                using (SqlCommand cmd = new SqlCommand(insert, conn))
+                /* using (SqlConnection conn = new SqlConnection(str))
                 {
-                    await cmd.ExecuteNonQueryAsync();
-                    log.Info("The record is created in the database! " + dataSent.IdCustomer.ToString());
-                    
-                    DataBack dataBack = new DataBack
+                    conn.Open();
+                    var insert = "INSERT INTO dbo.tbl_reserv(" +
+                                    "NameCustomer, " +
+                                    "EmailCustomer, " +
+                                    "IdBusiness, " +
+                                    "StartDate, " +
+                                    "EndDate, " +
+                                    "VALUES ('" +
+                                    dataSent.NameCustomer + "', " +
+                                    dataSent.EmailCustomer + ", '" +
+                                    dataSent.IdBusiness + "', '" +
+                                    dataSent.StartDate + "', '" +
+                                    dataSent.EndDate + "'); ";
+
+                    using (SqlCommand cmd = new SqlCommand(insert, conn))
                     {
-                        IdCustomer = 1036,
-                        UrlWebchat = "www.bot.com/"
-                    };
+                        await cmd.ExecuteNonQueryAsync();
+                        log.Info("The record is created in the database! " + dataSent.IdCustomer.ToString());
 
-                    return new JsonResult(dataBack, formatoJson);
-                }
-            }*/
+                        DataBack dataBack = new DataBack
+                        {
+                            IdCustomer = 1036,
+                            UrlWebchat = "www.bot.com/"
+                        };
 
-            var dataBack = new DataBack
-            {
-                IdCustomer = 1036,
-                UrlWebchat = "www.bot.com/"
-            };
-
+                        return new JsonResult(dataBack, formatoJson);
+                    }
+                }*/
+                var queryParams = new Dictionary<string, string>()
+                {
+                    {"NameCustomer", dataSent.NameCustomer },
+                    {"EmailCustomer", "marlon18_@hotmail.com" },
+                    {"IdCustomer","1036" }
+                };
+                string url = QueryHelpers.AddQueryString("http://oliwebpage.azurewebsites.net", queryParams);
+                dataBack = new DataBack
+                {
+                    IdCustomer = 1036,
+                    UrlWebchat = url
+                };
+            }
             return new JsonResult(dataBack, formatJson);
 
             //string name = req.Query["name"];
